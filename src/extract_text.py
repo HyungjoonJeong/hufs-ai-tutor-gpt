@@ -9,7 +9,7 @@ import base64
 def extract_documents_from_pdf(pdf_path, source_name="강의자료"):
     docs = []
     # 배포용 GPT-4o-mini 모델 호출 (비용이 저렴하고 시각 지능이 뛰어납니다)
-    vision_model = ChatOpenAI(model="gpt-4o-mini")
+    vision_model = ChatOpenAI(model="gpt-4o")
     
     with fitz.open(pdf_path) as doc:
         for page_num, page in enumerate(doc):

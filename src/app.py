@@ -57,7 +57,7 @@ if "vector_db" not in st.session_state:
 # --------------------------------
 def classify_question(question: str) -> str:
     # 수정 전: llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
+    llm = ChatOpenAI(model="gpt-4o", temperature=0.3) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
 
 
     prompt = f"""
@@ -121,7 +121,7 @@ def run_calculation_chain(question: str):
 # --------------------------------
 def run_rag(question: str, answer_style: str):
     # 수정 전: llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
+    llm = ChatOpenAI(model="gpt-4o", temperature=0) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
 
     retriever = st.session_state.vector_db.as_retriever(search_kwargs={"k": 5})
     docs = retriever.invoke(question)
