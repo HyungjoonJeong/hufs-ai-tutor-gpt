@@ -39,7 +39,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("HUFS RAG 기반 AI 튜터")
+st.title("HUFS RAG 기반 AI 튜터(GPT)")
 st.caption("강의 자료 기반으로 답변하며 출처를 명확히 제시합니다.")
 
 # --------------------------------
@@ -211,7 +211,6 @@ with st.sidebar:
 
     if st.button("대화 초기화"):
         st.session_state.messages = []
-        st.session_state.memory.clear()
         st.rerun()
 
     st.divider()
