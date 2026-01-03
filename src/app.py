@@ -57,7 +57,7 @@ if "vector_db" not in st.session_state:
 # --------------------------------
 def classify_question(question: str) -> str:
     # 수정 전: llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
 
 
     prompt = f"""
@@ -123,7 +123,7 @@ def run_rag(question: str, answer_style: str):
     # 수정 전: llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
 
-    retriever = st.session_state.vector_db.as_retriever(search_kwargs={"k": 3})
+    retriever = st.session_state.vector_db.as_retriever(search_kwargs={"k": 5})
     docs = retriever.invoke(question)
 
     context = "\n\n".join([d.page_content for d in docs])
@@ -132,6 +132,39 @@ def run_rag(question: str, answer_style: str):
         [f"{m['role']}: {m['content']}" for m in st.session_state.messages]
     )
 
+    
+    # 자세히 설명할 때의 지침을 훨씬 더 구체화합니다.
+    if answer_style == "자세히":
+        detail_instruction = """
+        1. 대학생에게 강의하는 친절한 튜터처럼 설명하라.
+        2. 주요 개념은 전문 용어와 함께 쉬운 풀이를 병행하라.
+        3. 답변의 구조를 '개요 - 상세 설명 - 요약' 순서로 구성하라.
+        4. 문맥에 풍부한 내용이 있다면 최대한 상세히 인용하라.
+        5. 가독성을 위해 불렛 포인트(*)나 번호를 적극 사용하라.
+        """
+    else:
+        detail_instruction = "핵심만 3줄 이내로 간결하게 요약하라."
+
+    prompt = f"""
+너는 한국외국어대학교(HUFS)의 실력 있는 AI 튜터이다. 
+제공된 [문맥]을 바탕으로 학생의 질문에 답변하라.
+
+[지시사항]
+{detail_instruction}
+
+[이전 대화]
+{chat_history}
+
+[문맥]
+{context}
+
+[학생의 질문]
+{question}
+
+답변 (친절하고 상세하게):
+"""
+    
+    
     length_instruction = (
         "핵심만 간결하게 답하라."
         if answer_style == "짧게"

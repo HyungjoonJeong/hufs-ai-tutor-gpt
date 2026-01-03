@@ -37,8 +37,8 @@ def extract_documents_from_pdf(pdf_path, source_name="강의자료"):
 
 def split_documents(documents):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=150,
+        chunk_size=1500,
+        chunk_overlap=200,
         length_function=len,
     )
     return text_splitter.split_documents(documents)
