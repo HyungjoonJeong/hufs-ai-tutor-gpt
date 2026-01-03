@@ -7,7 +7,11 @@ from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 
 # 2. 구글 AI 연결 (Google GenAI)
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+# 기존 Gemini 임포트 삭제 또는 주석 처리
+# from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+
+# OpenAI 임포트 추가
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 # 3. 데이터베이스 (Community)
 from langchain_community.vectorstores import FAISS  # Chroma 대신 FAISS가 있는지 확인
@@ -52,10 +56,9 @@ if "vector_db" not in st.session_state:
 # 질문 분류기
 # --------------------------------
 def classify_question(question: str) -> str:
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0
-    )
+    # 수정 전: llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
+
 
     prompt = f"""
 다음 질문을 유형으로 분류하라.
@@ -75,10 +78,8 @@ def classify_question(question: str) -> str:
 # 계산 문제 전용 체인
 # --------------------------------
 def run_calculation_chain(question: str):
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0
-    )
+    # 수정 전: llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o", temperature=0) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
 
     docs = st.session_state.vector_db.similarity_search(question, k=3)
     context = "\n\n".join([d.page_content for d in docs])
@@ -119,10 +120,8 @@ def run_calculation_chain(question: str):
 # 일반 RAG 체인
 # --------------------------------
 def run_rag(question: str, answer_style: str):
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0.3
-    )
+    # 수정 전: llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0) # gpt-4o-mini는 속도가 빠르고 저렴합니다.
 
     retriever = st.session_state.vector_db.as_retriever(search_kwargs={"k": 3})
     docs = retriever.invoke(question)
@@ -208,9 +207,9 @@ with st.sidebar:
 
             chunks = split_documents(all_docs)
 
-            embeddings = GoogleGenerativeAIEmbeddings(
-                model="models/embedding-001"
-            )
+            # 수정 전: embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+            embeddings = OpenAIEmbeddings(model="text-embedding-3-small") # 가성비와 성능이 가장 좋은 모델
+
 
             # 기존 코드 (에러 발생)
             # st.session_state.vector_db = Chroma.from_documents(...)
